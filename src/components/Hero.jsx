@@ -1,11 +1,23 @@
-import React from "react";
+import React , {useState} from "react";
+
 
 function Hero() {
+  
+  const [count , setCount] = useState(0)
+  const [color , setColor] = useState(false)
+
+  function isClicked() {
+    setCount(count + 1)
+    setColor(!color)
+  }
+
+
   return (
-    <section class="h-full text-white flex flex-col gap-4 justify-center items-center p-8">
+    <section class="h-full text-white flex flex-col gap-4 justify-center items-center my-32">
       <h1 className="text-4xl text-center font-bold text-white">
-        Welcome to <span className="text-red-600 text-6xl">NETFLIX</span>
+        Welcome to
       </h1>
+      <p className={`${color ? "text-red-600" : "text-white"} select-none text-6xl font-bold`} onClick={() => {isClicked()}}>NETFLIX {count + '.0'}</p>
       <p className="text-xl">Enjoy uninterrupted movies for free</p>
 
       <div class="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[8px] rounded-t-xl h-[172px] max-w-[301px] md:h-[294px] md:max-w-[512px]">

@@ -3,7 +3,7 @@ import Button from './Button'
 
 function Header() {
   return (
-    <header className='w-full p-4 flex justify-between font-bold'>
+    <header className='w-full px-6 flex justify-between font-bold fixed top-0'>
         <h1><img src="/assets/netflix.png" alt="" className='w-28'/></h1>
         <ul className='flex justify-center items-center gap-4 '>
             <li className=' text-black'>
@@ -15,8 +15,9 @@ function Header() {
               </select>
             </li>
 
-            <Button text='Sign IN'/>
-            <Button text='Sign UP'/>
+            <Button text="Home" to="/"/>
+            <Button text="Sign UP" to="/signUP"/>
+
         </ul>
     </header>
   )

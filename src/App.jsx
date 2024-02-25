@@ -1,15 +1,28 @@
 import './App.css';
 import Header from './components/Header';
+
+import {
+  BrowserRouter,
+  Link,
+  Route,
+  Routes,
+} from "react-router-dom";
+
 import Hero from './components/Hero';
+import SignUP from './pages/SignUP';
 import Footer from './components/Footer';
+
 
 function App() {
   return (
-    <div className="App h-screen w-screen text-white">
+    <BrowserRouter>
       <Header/>
-      <Hero/>
+      <Routes>
+        <Route path='/' element={<Hero/>}/>
+        <Route path='/signUP' element={<SignUP/>}/>
+      </Routes>
       <Footer/>
-    </div>
+    </BrowserRouter>
   );
 }
 
