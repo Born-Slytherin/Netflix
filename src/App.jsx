@@ -8,12 +8,13 @@ import {
   Routes,
 } from "react-router-dom";
 
+
 import Hero from './components/Hero';
 import SignUP from './pages/SignUP';
 import Footer from './components/Footer';
 
-
 function App() {
+  
   return (
     <BrowserRouter>
       <Header/>
@@ -22,6 +23,7 @@ function App() {
         <Route path='/signUP' element={<SignUP/>}/>
       </Routes>
       <Footer/>
+      
     </BrowserRouter>
   );
 }
