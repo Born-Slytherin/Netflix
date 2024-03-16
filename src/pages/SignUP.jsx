@@ -1,22 +1,24 @@
 import React from "react";
+import { useState } from "react";
+import supabase from "../Supabase";
 
 function SignUP() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   return (
     <div>
-
       <section class="">
-
         <div class="flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0 my-20">
-            {/* Card */}
+          {/* Card */}
           <div class="w-full rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0 backdrop-blur-sm bg-[#ffffff0f]">
-
-            
             <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Create an account
               </h1>
               <form class="space-y-4 md:space-y-6" action="#">
-
                 {/* User name input */}
                 <div>
                   <label
@@ -32,6 +34,9 @@ function SignUP() {
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Afsal VN"
                     required=""
+                    onChange={(user) => {
+                      setUsername(user.target.value);
+                    }}
                   />
                 </div>
 
@@ -50,6 +55,9 @@ function SignUP() {
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="name@company.com"
                     required=""
+                    onChange={(user) => {
+                      setEmail(user.target.value);
+                    }}
                   />
                 </div>
 
@@ -68,6 +76,9 @@ function SignUP() {
                     placeholder="••••••••"
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
+                    onChange={(user) => {
+                      setPassword(user.target.value);
+                    }}
                   />
                 </div>
                 <div>
@@ -84,6 +95,9 @@ function SignUP() {
                     placeholder="••••••••"
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
+                    onChange={(user) => {
+                      setConfirmPassword(user.target.value);
+                    }}
                   />
                 </div>
                 <div class="flex items-start">
@@ -113,7 +127,36 @@ function SignUP() {
                 </div>
                 <button
                   type="submit"
-                  class="w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  className="w-full text-white bg-red-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  onClick={async (btn) => {
+                    btn.preventDefault();
+
+                    console.log(email, password);
+
+                    const { data: authenticated, error: authError } =
+                      await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                      });
+
+                    console.log("data", authenticated);
+
+                    const { data: databaseEntry, error: databaseEntryError } =
+                      await supabase
+                        .from("user")
+                        .insert({
+                          id: authenticated.user.id,
+                          username: username,
+                        })
+                        .select();
+                    if (databaseEntryError) {
+                      console.log("databaseEntryError" + JSON.stringify(databaseEntryError));
+                    }
+
+                    if (authError) {
+                      console.log("error" + authError);
+                    }
+                  }}
                 >
                   Create an account
                 </button>
