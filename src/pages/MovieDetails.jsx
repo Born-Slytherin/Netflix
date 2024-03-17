@@ -1,17 +1,26 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import getData from "../utils/GetUserData";
+import Loader from "../components/Loader";
 
 function MovieDetails() {
+
+  const [loading , setLoading]= useState(true)
   const { id } = useParams();
   const [movies, setMovies] = useState({});
+
+
   useEffect(() => {
     fetch(`https://65ed59d50ddee626c9b18026.mockapi.io/allmovies/${id}`)
       .then((res) => res.json())
       .then((movies) => setMovies(movies));
+    setTimeout(()=>{
+      setLoading(false)
+    }, 2000);
   }, []);
 
-  return (
+  return loading ? (<Loader/>):(
     <div className="w-full h-full flex  gap-6 justify-center items-center p-12 my-32">
       {/* Image */}
       <div className="w-1/2 flex justify-end">
@@ -64,6 +73,7 @@ function MovieDetails() {
         </div>
       </div>
     </div>
+  
   );
 }
 

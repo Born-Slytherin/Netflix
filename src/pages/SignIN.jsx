@@ -1,7 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import supabase from "../Supabase";
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
+import getData from "../utils/GetUserData";
 
 function SignIN() {
-  return (
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [Loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  function handleError() {
+    setError(true);
+  }
+
+ 
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    getData().then((user) => {
+      console.log(user);
+      if (user?.aud) {
+        navigate("/allmovies");
+      }
+    });
+  }, []);
+
+  return Loading ? (
+    <Loader />
+  ) : (
     <div>
       <section class="">
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
@@ -25,6 +56,9 @@ function SignIN() {
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="name@company.com"
                     required=""
+                    onChange={(user) => {
+                      setEmail(user.target.value);
+                    }}
                   />
                 </div>
                 <div>
@@ -41,7 +75,15 @@ function SignIN() {
                     placeholder="••••••••"
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
+                    onChange={(user) => {
+                      setPassword(user.target.value);
+                    }}
                   />
+                  {error && (
+                    <span className="text-red-600 font-bold text-sm">
+                      Invaild email or password
+                    </span>
+                  )}
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-start">
@@ -73,11 +115,28 @@ function SignIN() {
                 <button
                   type="submit"
                   class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  onClick={async (btn) => {
+                    btn.preventDefault();
+                    const { data: authdata, error: autherror } =
+                      await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                      });
+                    console.log(email, password);
+                    if (autherror) {
+                      console.log(autherror);
+                      handleError();
+                      return;
+                    }
+                    alert("Signed in successfully");
+
+                    navigate("/allmovies");
+                  }}
                 >
                   Sign in
                 </button>
                 <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don’t have an account yet?{" "}
+                  Don't have an account yet?{" "}
                   <a
                     href="#"
                     class="font-medium text-primary-600 hover:underline dark:text-primary-500"

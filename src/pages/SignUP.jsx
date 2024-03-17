@@ -1,14 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import supabase from "../Supabase";
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
+import getData from "../utils/GetUserData";
 
 function SignUP() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordcheck, setPasswordCheck] = useState(false);
+  const [passwordlength, setPasswordlength] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  return (
+  const navigate = useNavigate();
+
+  function handlePasswordCheck() {
+    setPasswordCheck(true);
+  }
+  function handlePasswordLength(e) {
+    if (e.length <= 6) {
+      setPasswordlength(true);
+    } else {
+      setPasswordlength(false);
+    }
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    getData().then((data) => {
+      if (data?.aud) {
+        navigate("/allmovies");
+      }
+    });
+  }, []);
+
+  return loading ? (
+    <Loader />
+  ) : (
     <div>
       <section class="">
         <div class="flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0 my-20">
@@ -78,8 +110,14 @@ function SignUP() {
                     required=""
                     onChange={(user) => {
                       setPassword(user.target.value);
+                      handlePasswordLength(user.target.value);
                     }}
                   />
+                  {passwordlength && (
+                    <p class="text-sm text-red-600 dark:text-red-400 my-4">
+                      Passwords should be at least 6 characters
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -99,6 +137,11 @@ function SignUP() {
                       setConfirmPassword(user.target.value);
                     }}
                   />
+                  {passwordcheck && (
+                    <p class="text-sm text-red-600 dark:text-red-400 my-4">
+                      Passwords do not match
+                    </p>
+                  )}
                 </div>
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
@@ -132,12 +175,20 @@ function SignUP() {
                     btn.preventDefault();
 
                     console.log(email, password);
+                    if (password !== confirmPassword) {
+                      handlePasswordCheck();
+                      return;
+                    }
 
                     const { data: authenticated, error: authError } =
                       await supabase.auth.signUp({
                         email: email,
                         password: password,
                       });
+
+                    if (authError) {
+                      return console.log(authError);
+                    }
 
                     console.log("data", authenticated);
 
@@ -150,12 +201,19 @@ function SignUP() {
                         })
                         .select();
                     if (databaseEntryError) {
-                      console.log("databaseEntryError" + JSON.stringify(databaseEntryError));
+                      console.log(
+                        "databaseEntryError" +
+                          JSON.stringify(databaseEntryError)
+                      );
                     }
 
                     if (authError) {
-                      console.log("error" + authError);
+                      return console.log("error" + authError);
                     }
+
+                    alert("Account created successfully");
+
+                    navigate("/allmovies");
                   }}
                 >
                   Create an account
